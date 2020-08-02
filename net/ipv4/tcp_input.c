@@ -3080,7 +3080,6 @@ static int tcp_clean_rtx_queue(struct sock *sk, u32 prior_fack,
 	long seq_rtt_us = -1L;
 	long ca_rtt_us = -1L;
 	u32 pkts_acked = 0;
-	u32 last_in_flight = 0;
 	bool rtt_update;
 	int flag = 0;
 
@@ -3178,8 +3177,8 @@ static int tcp_clean_rtx_queue(struct sock *sk, u32 prior_fack,
 		seq_rtt_us = tcp_stamp_us_delta(tp->tcp_mstamp, first_ackt);
 		ca_rtt_us = tcp_stamp_us_delta(tp->tcp_mstamp, last_ackt);
 
-		if (pkts_acked == 1 && last_in_flight < tp->mss_cache &&
-		    last_in_flight && !prior_sacked && fully_acked &&
+		if (pkts_acked == 1 && fully_acked && !prior_sacked &&
+		    (tp->snd_una - prior_snd_una) < tp->mss_cache &&
 		    sack->rate->prior_delivered + 1 == tp->delivered &&
 		    !(flag & (FLAG_CA_ALERT | FLAG_SYN_ACKED))) {
 			/* Conservatively mark a delayed ACK. It's typically
@@ -3235,9 +3234,9 @@ static int tcp_clean_rtx_queue(struct sock *sk, u32 prior_fack,
 
 	if (icsk->icsk_ca_ops->pkts_acked) {
 		struct ack_sample sample = { .pkts_acked = pkts_acked,
-					     .rtt_us = sack->rate->rtt_us,
-					     .in_flight = last_in_flight };
-
+					     .rtt_us = sack->rate->rtt_us };
+		sample.in_flight = tp->mss_cache *
+			(tp->delivered - sack->rate->prior_delivered);
 		icsk->icsk_ca_ops->pkts_acked(sk, &sample);
 	}
 
@@ -3564,16 +3563,12 @@ static void tcp_xmit_recovery(struct sock *sk, int rexmit)
 /* Returns the number of packets newly acked or sacked by the current ACK */
 static u32 tcp_newly_delivered(struct sock *sk, u32 prior_delivered, int flag)
 {
-	const struct net *net = sock_net(sk);
 	struct tcp_sock *tp = tcp_sk(sk);
 	u32 delivered;
 
 	delivered = tp->delivered - prior_delivered;
-	NET_ADD_STATS(net, LINUX_MIB_TCPDELIVERED, delivered);
-	if (flag & FLAG_ECE) {
+	if (flag & FLAG_ECE)
 		tp->delivered_ce += delivered;
-		NET_ADD_STATS(net, LINUX_MIB_TCPDELIVEREDCE, delivered);
-	}
 	return delivered;
 }
 
