@@ -76,7 +76,6 @@ CONFIG_ARM_CPUIDLE=y
 CONFIG_CPU_FREQ=y
 CONFIG_CPU_FREQ_TIMES=y
 CONFIG_CPU_FREQ_STAT=y
-CPU_FREQ_STAT=y
 CONFIG_CPU_FREQ_GOV_POWERSAVE=y
 CONFIG_CPU_FREQ_GOV_USERSPACE=y
 CONFIG_CPU_FREQ_GOV_ONDEMAND=y
@@ -772,3 +771,9 @@ CONFIG_TCP_CONG_ILLINOIS=y
 CONFIG_TCP_CONG_BBR2=y
 CONFIG_DEFAULT_BBR2=y
 CONFIG_DEFAULT_TCP_CONG="bbr2"
+
+# Dynamic Stune Boost & Stune Assist need to be tweaked 
+# before these are set to =y, compiles, just performance
+# isn't optimized for how these are intended to be used 
+# CONFIG_DYNAMIC_STUNE_BOOST is not set
+# CONFIG_STUNE_ASSIST is not set
