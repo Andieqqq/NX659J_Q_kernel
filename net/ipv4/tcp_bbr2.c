@@ -77,7 +77,7 @@
 #define BBR_SCALE 8	/* scaling factor for fractions in BBR (e.g. gains) */
 #define BBR_UNIT (1 << BBR_SCALE)
 
-#define FLAG_DEBUG_VERBOSE	0x1	/* Verbose debugging messages */
+#define FLAG_DEBUG_VERBOSE	0x0	/* Turn OFF Verbose debugging messages */
 #define FLAG_DEBUG_LOOPBACK	0x2	/* Do NOT skip loopback addr */
 
 #define CYCLE_LEN		8	/* number of phases in a pacing gain cycle */
@@ -325,12 +325,12 @@ static u32 bbr_flags;		/* Debugging related stuff */
 
 /* Whether to debug using printk.
  */
-static bool bbr_debug_with_printk;
+static bool bbr_debug_with_printk = false;
 
 /* Whether to debug using ftrace event tcp:tcp_bbr_event.
  * Ignored when bbr_debug_with_printk is set.
  */
-static bool bbr_debug_ftrace;
+static bool bbr_debug_ftrace = false;
 
 /* Experiment: each cycle, try to hold sub-unity gain until inflight <= BDP. */
 static bool bbr_drain_to_target = true;		/* default: enabled */
