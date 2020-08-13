@@ -30,7 +30,7 @@ KERNEL_DIR=`pwd`
 ZIMAGE_DIR="~/RM5G/out-clang/arch/arm64/boot/"
 
 # Kernel Details
-VER="-1.3-bbr2"
+VER="-1.4"
 
 # Vars
 BASE_AK_VER="MOD-RM5G-GPUOC"
